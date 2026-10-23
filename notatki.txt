@@ -1,162 +1,372 @@
-PANDAS - NOTATKA PRAKTYCZNA (PIOTR EDITION)
+============================================================
+PANDAS REFERENCE - STRUKTURY, SKŁADNIA I MENTALNE MODELE
+============================================================
 
-==================================================
-1. OGLĄDANIE DANYCH
-==================================================
+############################################################
+DATAFRAME
+############################################################
 
-df.head()                 # pierwsze 5 wierszy
-df.tail()                 # ostatnie 5 wierszy
-df.sample(5)              # losowe 5 wierszy
+Co to jest?
 
-df.columns                # nazwy kolumn
-
-df.info()                 # struktura danych
-# liczba rekordów
-# nazwy kolumn
-# typy danych
-# brakujące wartości
-
-df.describe()             # statystyki liczbowe
-
-df.describe(include="all")
-# statystyki wszystkiego
-
-type(df)                  # sprawdzenie typu obiektu
-
-==================================================
-2. PODSTAWOWE AGREGACJE
-==================================================
-
-df["col"].sum()
-df["col"].mean()
-df["col"].median()
-df["col"].min()
-df["col"].max()
-df["col"].count()
+Tabela podobna do Excela.
 
 Przykład:
 
-sales["weekly_sales"].sum()
+| store | type | weekly_sales |
+|--------|--------|--------|
+| 1 | A | 1000 |
+| 2 | B | 2000 |
 
-==================================================
-3. LICZENIE WYSTĄPIEŃ
-==================================================
+Tworzenie:
 
-sales["type"].value_counts()
+df = pd.DataFrame(...)
 
-Przykład wyniku:
+############################################################
+PODEJRZENIE DANYCH
+############################################################
 
-A    22
-B    15
-C     8
+df.head()
 
-value_counts() oznacza:
+Co robi?
+Pokazuje pierwsze 5 rekordów.
 
-"Ile razy pojawiła się każda wartość?"
-
-==================================================
-4. UDZIAŁ PROCENTOWY KATEGORII
-==================================================
-
-sales["type"].value_counts(normalize=True)
+Zwraca:
+DataFrame
 
 Przykład:
 
-A    0.60
-B    0.25
-C    0.15
+sales.head()
 
-UWAGA
+------------------------------------------------------------
 
-normalize=True NIE dzieli przez liczbę unikalnych wartości.
+df.tail()
 
-Dzieli przez liczbę wszystkich rekordów.
+Co robi?
+Pokazuje ostatnie rekordy.
 
-Czyli:
+------------------------------------------------------------
 
-liczność kategorii / suma wszystkich liczności
+df.sample(5)
 
-==================================================
-5. UNIKALNE WARTOŚCI
-==================================================
+Co robi?
+Losowe rekordy.
 
-df["col"].nunique()
+------------------------------------------------------------
 
-Ile różnych wartości znajduje się w kolumnie.
+df.columns
 
-==================================================
-6. FILTROWANIE
-==================================================
+Co robi?
+Zwraca nazwy kolumn.
 
-df[df["type"] == "A"]
+Zwraca:
+
+Index([...])
+
+Przykład:
+
+sales.columns
+
+------------------------------------------------------------
+
+df.info()
+
+Co robi?
+
+- liczba rekordów
+- nazwy kolumn
+- typ danych
+- liczba NULL
+
+Najczęściej używana funkcja na początku analizy.
+
+------------------------------------------------------------
+
+df.describe()
+
+Co robi?
+
+Statystyki liczbowe:
+
+count
+mean
+std
+min
+25%
+50%
+75%
+max
+
+############################################################
+WYBIERANIE KOLUMN
+############################################################
+
+JEDNA KOLUMNA
+
+Składnia:
+
+df["col"]
+
+Przykład:
+
+sales["weekly_sales"]
+
+Zwraca:
+
+Series
+
+Jak myśleć?
+
+Jedna rzecz -> string
+
+------------------------------------------------------------
+
+WIELE KOLUMN
+
+Składnia:
+
+df[["col1", "col2"]]
+
+Przykład:
+
+sales[["weekly_sales", "department"]]
+
+Zwraca:
+
+DataFrame
+
+Jak myśleć?
+
+Wiele rzeczy -> lista
+
+############################################################
+FILTROWANIE
+############################################################
+
+Składnia:
+
+df[warunek]
 
 Przykład:
 
 sales[sales["type"] == "A"]
 
-Warunek większy od:
+Czytanie:
 
-df[df["weekly_sales"] > 1000]
+Zostaw tylko rekordy
+gdzie type jest A.
 
-==================================================
-7. AGREGACJA PO FILTRZE
-==================================================
+------------------------------------------------------------
 
-sales[sales["type"] == "A"]["weekly_sales"].sum()
+Większe od:
 
-Czytanie krok po kroku:
+sales[sales["weekly_sales"] > 1000]
 
-1. wybierz rekordy typu A
-2. wybierz kolumnę weekly_sales
-3. policz sumę
+------------------------------------------------------------
+
+Mniejsze od:
+
+sales[sales["weekly_sales"] < 1000]
+
+############################################################
+AGREGACJE
+############################################################
+
+sum()
+
+Składnia:
+
+df["col"].sum()
+
+Przykład:
+
+sales["weekly_sales"].sum()
+
+Zwraca:
+
+jedną liczbę
+
+------------------------------------------------------------
+
+mean()
+
+Składnia:
+
+df["col"].mean()
+
+Zwraca:
+
+średnią
+
+------------------------------------------------------------
+
+median()
+
+Składnia:
+
+df["col"].median()
+
+Zwraca:
+
+medianę
+
+------------------------------------------------------------
+
+min()
+
+Minimalna wartość
+
+------------------------------------------------------------
+
+max()
+
+Maksymalna wartość
+
+------------------------------------------------------------
+
+count()
+
+Składnia:
+
+df["col"].count()
+
+Liczy:
+
+niepuste rekordy
+
+UWAGA
+
+To NIE jest value_counts()
+
+############################################################
+VALUE_COUNTS
+############################################################
+
+Składnia:
+
+df["col"].value_counts()
+
+Przykład:
+
+sales["type"].value_counts()
+
+Wynik:
+
+A 22
+B 15
+C 8
+
+Znaczenie:
+
+Ile razy występuje każda wartość.
+
+------------------------------------------------------------
+
+normalize=True
+
+Składnia:
+
+df["col"].value_counts(normalize=True)
+
+Przykład:
+
+A 0.60
+B 0.25
+C 0.15
+
+Znaczenie:
+
+Jaką część wszystkich rekordów
+stanowi dana wartość.
+
+Pandas robi:
+
+value_counts() / suma
+
+############################################################
+NUNIQUE
+############################################################
+
+Składnia:
+
+df["col"].nunique()
+
+Co robi?
+
+Liczy unikalne wartości.
+
+Przykład:
+
+sales["type"].nunique()
+
+Wynik:
+
+3
+
+############################################################
+FILTROWANIE + AGREGACJA
+############################################################
 
 Schemat:
 
 df[warunek][kolumna].agregacja()
 
-==================================================
-8. GROUPBY
-==================================================
+Przykład:
 
-sales.groupby("type")["weekly_sales"].sum()
+sales[sales["type"] == "A"]["weekly_sales"].sum()
 
-Myślenie:
+Czytanie:
 
-groupby("type")
+1. wybierz A
+2. wybierz weekly_sales
+3. policz sumę
 
-=
+############################################################
+GROUPBY
+############################################################
 
-podziel dane na grupy:
+Składnia:
 
-A
-B
-C
+df.groupby("col")
 
-następnie:
+Przykład:
 
-.sum()
+sales.groupby("type")
 
-=
+Co zwraca?
 
-policz sumę dla każdej grupy
+GroupBy object
 
-==================================================
-9. UDZIAŁY PROCENTOWE GRUP
-==================================================
+Jeszcze nic nie liczy.
 
-sales_by_type = sales.groupby("type")["weekly_sales"].sum()
+Tworzy grupy.
 
-sales_propn_by_type = sales_by_type / sales_by_type.sum()
+############################################################
+GROUPBY + SUM
+############################################################
 
-Pandas automatycznie robi:
+Składnia:
 
-A / suma
-B / suma
-C / suma
+df.groupby("type")["weekly_sales"].sum()
 
-==================================================
-10. GROUPBY NA WIELU KOLUMNACH
-==================================================
+Znaczenie:
+
+Podziel dane na grupy typu.
+
+Policz sumę w każdej grupie.
+
+############################################################
+GROUPBY + MEAN
+############################################################
+
+df.groupby("type")["weekly_sales"].mean()
+
+Znaczenie:
+
+Średnia dla każdej grupy.
+
+############################################################
+GROUPBY PO DWÓCH KOLUMNACH
+############################################################
 
 Jedna kolumna:
 
@@ -168,92 +378,118 @@ groupby(["type", "is_holiday"])
 
 Reguła:
 
-jedna rzecz -> string
+Jedna rzecz -> string
 
-"type"
+Wiele rzeczy -> lista
 
-wiele rzeczy -> lista
+Powstają grupy:
 
-["type", "is_holiday"]
+A False
+A True
+B False
+B True
 
-==================================================
-11. AGG()
-==================================================
+############################################################
+AGG
+############################################################
 
-sales.groupby("type")["weekly_sales"].agg(
+Składnia:
+
+df.groupby("type")["weekly_sales"].agg(
     ["min", "max", "mean", "median"]
 )
 
-agg() pozwala policzyć wiele statystyk jednocześnie.
+Co robi?
 
-Nie rób wcześniej .sum(),
-jeżeli potrzebujesz:
+Liczy wiele statystyk naraz.
 
-min
-max
-mean
-median
+------------------------------------------------------------
 
-Po .sum() zostaje tylko jedna liczba na grupę.
-
-==================================================
-12. JEDNA VS WIELE KOLUMN
-==================================================
-
-Jedna kolumna:
-
-df["col"]
-
-typ wyniku:
-
-Series
-
-Wiele kolumn:
-
-df[["col1", "col2"]]
-
-typ wyniku:
-
-DataFrame
-
-Dokładnie tak samo działa po groupby.
-
-Jedna:
-
-sales.groupby("type")["weekly_sales"]
-
-Wiele:
-
-sales.groupby("type")[
-    ["unemployment", "fuel_price_usd_per_l"]
-]
-
-Najważniejsza obserwacja:
-
-jedna rzecz -> string
-
-wiele rzeczy -> lista
-
-==================================================
-13. AGG DLA WIELU KOLUMN
-==================================================
+Dla wielu kolumn:
 
 sales.groupby("type")[
     ["unemployment",
      "fuel_price_usd_per_l"]
 ].agg(
-    ["min", "max", "mean", "median"]
+    ["min","max","mean","median"]
 )
 
-Najpierw wybierasz grupy.
+############################################################
+UDZIAŁY PROCENTOWE GRUP
+############################################################
 
-Potem wybierasz kolumny.
+sales_by_type =
+sales.groupby("type")["weekly_sales"].sum()
 
-Potem określasz statystyki.
+sales_by_type / sales_by_type.sum()
 
-==================================================
-14. PIVOT TABLE
-==================================================
+Pandas zrobi:
+
+A / całość
+
+B / całość
+
+C / całość
+
+automatycznie.
+
+############################################################
+PIVOT TABLE
+############################################################
+
+Najważniejsza składnia:
+
+df.pivot_table(
+    values="kolumna",
+    index="grupa",
+    aggfunc="mean"
+)
+
+------------------------------------------------------------
+
+values
+
+Co analizuję?
+
+Przykład:
+
+weekly_sales
+
+------------------------------------------------------------
+
+index
+
+Po czym grupuję?
+
+Przykład:
+
+type
+
+------------------------------------------------------------
+
+columns
+
+Drugi wymiar grupowania
+
+Przykład:
+
+is_holiday
+
+------------------------------------------------------------
+
+aggfunc
+
+Jak liczyć?
+
+mean
+sum
+min
+max
+median
+
+############################################################
+PIVOT TABLE PRZYKŁAD
+############################################################
 
 sales.pivot_table(
     values="weekly_sales",
@@ -261,23 +497,14 @@ sales.pivot_table(
     aggfunc="mean"
 )
 
-Myślenie:
+Czytanie:
 
-values
-=
-co analizuję
+Pokaż średnią sprzedaż
+dla każdego typu sklepu.
 
-index
-=
-po czym grupuję
-
-aggfunc
-=
-jaką statystykę liczę
-
-==================================================
-15. PIVOT TABLE NA DWÓCH WYMIARACH
-==================================================
+############################################################
+PIVOT TABLE DWA WYMIARY
+############################################################
 
 sales.pivot_table(
     values="weekly_sales",
@@ -286,32 +513,35 @@ sales.pivot_table(
     aggfunc="mean"
 )
 
-Otrzymasz:
+Czytanie:
 
-           False      True
-A            ...
-B            ...
-C            ...
+Pokaż średnią sprzedaż
 
-==================================================
-16. GROUPBY VS PIVOT TABLE
-==================================================
+dla każdego typu sklepu
 
-GroupBy:
+oraz osobno
+
+dla holiday=True i holiday=False.
+
+############################################################
+GROUPBY VS PIVOT
+############################################################
+
+GROUPBY
 
 dogs.groupby(
-    ["color", "breed"]
+    ["color","breed"]
 )["weight_kg"].mean()
 
-wynik:
+Wynik:
 
-color  breed
-Black  Lab       30
-Black  Poodle    18
-Brown  Lab       28
-Brown  Poodle    16
+color breed
+Black Lab
+Black Poodle
 
-Pivot Table:
+------------------------------------------------------------
+
+PIVOT
 
 dogs.pivot_table(
     values="weight_kg",
@@ -319,52 +549,44 @@ dogs.pivot_table(
     columns="breed"
 )
 
-wynik:
+Wynik:
 
-breed    Lab  Poodle
+          Lab Poodle
+Black
+Brown
 
-Black     30    18
-Brown     28    16
+Ta sama informacja.
+Inny sposób prezentacji.
 
-To są praktycznie te same dane.
+############################################################
+MENTALNY MODEL PANDAS
+############################################################
 
-GroupBy = grupowanie
-
-Pivot Table = grupowanie pokazane jako tabela przestawna
-
-==================================================
-17. MENTALNY MODEL PANDAS
-==================================================
-
-Większość zadań można rozwiązać:
+Większość zadań:
 
 DataFrame
-    ↓
-filtr?
-    ↓
-groupby?
-    ↓
-wybór kolumn
-    ↓
-agregacja
+↓
+Filtr?
+↓
+Wybór kolumn
+↓
+GroupBy?
+↓
+Agregacja
 
 Przykład:
 
 sales
-    ↓
-sales[sales["type"] == "A"]
-    ↓
-groupby("department")
-    ↓
+↓
+sales[sales["type"]=="A"]
+↓
 ["weekly_sales"]
-    ↓
+↓
 sum()
 
-==================================================
-18. JAK MYŚLEĆ PODCZAS ZADAŃ
-==================================================
-
-Zawsze zadaj sobie 3 pytania:
+############################################################
+3 PYTANIA PRZY KAŻDYM ZADANIU
+############################################################
 
 1. Po czym grupuję?
 
@@ -376,17 +598,16 @@ groupby("type")
 
 lub
 
-[["unemployment","fuel_price_usd_per_l"]]
+[["fuel_price","unemployment"]]
 
 3. Co chcę policzyć?
 
 sum()
 mean()
 median()
-max()
-min()
 count()
 agg(...)
 
-Jeżeli odpowiesz sobie na te 3 pytania,
-zwykle składnia pandas sama zaczyna układać się w głowie.
+Jeżeli potrafisz odpowiedzieć
+na te trzy pytania,
+to zwykle sam zgadniesz poprawną składnię pandas.
